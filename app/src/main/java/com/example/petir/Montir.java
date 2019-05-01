@@ -10,7 +10,7 @@ public class Montir {
 
     }
     public Montir(String name, String address, String email, String role, String bank, String bank_account_name, String bank_account_number
-                   , Double latitude, Double longitude, Integer wallet) {
+                   , Double latitude, Double longitude, Integer wallet, Double rating) {
         this.name = name;
         this.address = address;
         this.email = email;
@@ -21,6 +21,7 @@ public class Montir {
         this.latitude = latitude;
         this.longitude = longitude;
         this.wallet = wallet;
+        this.rating = rating;
     }
 
     public Integer getWallet() {
