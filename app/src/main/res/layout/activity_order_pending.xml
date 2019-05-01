@@ -6,8 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".OrderPending.OrderPending">
     
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="orderPending"/>
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textSize="20dp"
+            android:text="Daftar pesanan yang memesan anda"/>
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/listViewOrderPending">
+        </ListView>
+    </LinearLayout>
 </RelativeLayout>
