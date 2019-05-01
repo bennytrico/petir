@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.petir.Order;
@@ -63,6 +64,31 @@ public class OrderAdapter extends ArrayAdapter<Order> {
             statusOrder.setText(R.string.processService);
         else if (currentOrder.getStatus_order().equals("done"))
             statusOrder.setText(R.string.serviceDone);
+
+        if (currentOrder.getType_order().equals("Service Rutin")) {
+            LinearLayout kerusakanLayout = (LinearLayout)listItem.findViewById(R.id.layoutKerusakanCheckUp);
+            kerusakanLayout.setVisibility(View.GONE);
+
+            TextView oliMesin = (TextView)listItem.findViewById(R.id.oliMesinOrder);
+            TextView oliGanda = (TextView)listItem.findViewById(R.id.oliGandaOrder);
+            oliMesin.setText("Tidak ganti");
+            oliGanda.setText("Tidak ganti");
+            if (currentOrder.getOli_mesin()) {
+                oliMesin.setText("Ganti");
+            }
+            if (currentOrder.getOli_ganda()) {
+                oliGanda.setText("Ganti");
+            }
+        } else if (currentOrder.getType_order().equals("Check Up")) {
+            LinearLayout layoutOliMesin = (LinearLayout)listItem.findViewById(R.id.layoutOliMesin);
+            LinearLayout layoutOliGanda = (LinearLayout)listItem.findViewById(R.id.layoutOliGanda);
+
+            layoutOliMesin.setVisibility(View.GONE);
+            layoutOliGanda.setVisibility(View.GONE);
+
+            TextView typeKerusakan = (TextView)listItem.findViewById(R.id.kerusakanCheckUpOrder);
+            typeKerusakan.setText(currentOrder.getType_checkup());
+        }
 
         return listItem;
     }

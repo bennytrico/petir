@@ -27,8 +27,6 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private String email;
-    private String password;
     private Boolean flag;
 
     EditText emailUser;
@@ -51,7 +49,7 @@ public class LoginActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
         mAuth = FirebaseAuth.getInstance();
         flag = true;
-        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+//        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
 
         login.setOnClickListener(new View.OnClickListener() {
@@ -63,8 +61,8 @@ public class LoginActivity extends AppCompatActivity {
 
     }
     public void validatorDataLogin () {
-        email = emailUser.getText().toString().trim();
-        password = passwordUser.getText().toString().trim();
+        String email = emailUser.getText().toString().trim();
+        String password = passwordUser.getText().toString().trim();
         if (TextUtils.isEmpty(email)) {
             Toast.makeText(getApplicationContext(), "Email harus diisi", Toast.LENGTH_SHORT).show();
             flag = false;
@@ -82,7 +80,7 @@ public class LoginActivity extends AppCompatActivity {
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(loginLayout.getWindowToken(), 0);
 
-            mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {

@@ -28,10 +28,9 @@
             android:background="@drawable/customborder"
             android:id="@+id/bottom-nav"
             app:menu="@menu/navigation_bottom"
-            android:layout_alignParentBottom="true"
-            >
-        
+            android:layout_alignParentBottom="true">
         </android.support.design.widget.BottomNavigationView>
+        
     </RelativeLayout>
     <android.support.design.widget.NavigationView
         android:layout_width="wrap_content"

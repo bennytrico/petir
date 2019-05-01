@@ -33,7 +33,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 
         mAuth = FirebaseAuth.getInstance();
-
+        if (mAuth.getCurrentUser() == null) {
+//            Toast.makeText(getApplicationContext(),"Harus login terlebih dahulu",Toast.LENGTH_SHORT).show();
+            startActivity(new Intent(getApplicationContext(),LoginActivity.class));
+        }
         navigation();
         loadFragment(new OrderPending());
         navigationBottom();
@@ -60,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             handler.postDelayed(r, 1000);
         } else{
-            mAuth.getInstance().signOut();
+            FirebaseAuth.getInstance().signOut();
             Intent intent = new Intent(getApplicationContext(), MainActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -121,14 +124,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 return true;
             }
         });
-    }
-    @Override
-    protected void onStart() {
-        if (mAuth.getCurrentUser() == null) {
-            Toast.makeText(getApplicationContext(),"Harus login terlebih dahulu",Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(getApplicationContext(),LoginActivity.class));
-        }
-        super.onStart();
     }
 
     @Override
