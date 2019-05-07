@@ -90,6 +90,9 @@ public class OrderAdapter extends ArrayAdapter<Order> {
             typeKerusakan.setText(currentOrder.getType_checkup());
         }
 
+        TextView detailOrderMotor = (TextView) listItem.findViewById(R.id.detailMotorOrder);
+        detailOrderMotor.setText(currentOrder.getBrand()+", "+currentOrder.getType_motor()+", "+currentOrder.getTransmition());
+
         return listItem;
     }
 

@@ -100,11 +100,14 @@ public class OrderPending extends Fragment {
         TextView address = (TextView) dialog.findViewById(R.id.addressOrderDialog);
         address.setText(order.getAddress());
 
+        TextView viewMap = (TextView) dialog.findViewById(R.id.seeMap);
+
+
         Button btnConfirm = (Button) dialog.findViewById(R.id.confirmOrderDialog);
         final Button btnCancel = (Button) dialog.findViewById(R.id.cancelOrderDialog);
 
         Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
-        List<Address> location = null;
+        List<Address> location = new ArrayList<>();
         try {
             location = geocoder.getFromLocationName(order.getAddress(), 1);
         } catch (IOException e) {
@@ -113,19 +116,28 @@ public class OrderPending extends Fragment {
         Address alamat = location.get(0);
         final Double latitude = alamat.getLatitude();
         final Double longitude = alamat.getLongitude();
-        btnConfirm.setOnClickListener(new View.OnClickListener() {
+        Log.e("asd", String.valueOf(alamat));
+
+        viewMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String map = "https://www.google.com/maps/search/?api=1&query="+latitude+","+longitude;
+                String map = "https://www.google.com/maps/search/?api=1&query="+order.getAddress()+","+latitude+","+longitude;
                 Uri gmmIntentUri = Uri.parse(map);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
                 if (mapIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     startActivity(mapIntent);
                 }
-//                dialog.dismiss();
             }
         });
+
+        btnConfirm.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
