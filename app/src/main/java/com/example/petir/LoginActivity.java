@@ -61,6 +61,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
     public void validatorDataLogin () {
+        progressDialog.setMessage("Sedang proses . .");
         String email = emailUser.getText().toString().trim();
         String password = passwordUser.getText().toString().trim();
         if (TextUtils.isEmpty(email)) {
@@ -84,7 +85,6 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        progressDialog.setMessage("Sedang proses . .");
                         progressDialog.show();
                         DatabaseReference db = FirebaseDatabase.getInstance().getReference("Montirs");
                         db.addListenerForSingleValueEvent(new ValueEventListener() {

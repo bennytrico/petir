@@ -1,8 +1,8 @@
 package com.example.petir.OrderPending;
 
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
-import android.graphics.Typeface;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.Uri;
@@ -16,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -29,19 +28,24 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
+import java.util.Map;
 
 public class OrderPending extends Fragment {
 
     ListView listviewOrder;
     OrderAdapter listViewOrderAdapter;
     ArrayList<Order> orderArrayList = new ArrayList<>();
+    private Dialog dialog;
+    private Address alamat;
+    private Double latitude;
+    private Double longitude;
 
     @Nullable
     @Override
@@ -57,8 +61,10 @@ public class OrderPending extends Fragment {
                     orderArrayList.clear();
                     for (DataSnapshot data : dataSnapshot.getChildren()) {
                         Order r = data.getValue(Order.class);
-                        r.setId(data.getKey());
-                        if (r.getMontir().getId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()) && r.getStatus_order().equals("wait")) {
+                        if (r != null) {
+                            r.setId(data.getKey());
+                        }
+                        if (r != null && r.getMontir().getId().equals(FirebaseAuth.getInstance().getCurrentUser().getUid()) && r.getStatus_order().equals("wait")) {
                             orderArrayList.add(r);
                         }
                     }
@@ -73,10 +79,12 @@ public class OrderPending extends Fragment {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             Order r = listViewOrderAdapter.getItem(position);
-                            assert r != null;
-                            showDialogOliGanda(r);
+                            if (r != null) {
+                                showDialogOliGanda(r);
+                            }
                         }
                     });
+                    Collections.reverse(orderArrayList);
                     listviewOrder.setAdapter(listViewOrderAdapter);
 
                 }
@@ -91,9 +99,10 @@ public class OrderPending extends Fragment {
         return view;
     }
     private void showDialogOliGanda(final Order order) {
-        final Dialog dialog = new Dialog(getActivity());
+        if (getActivity() != null) {
+            dialog = new Dialog(getActivity());
+        }
         dialog.setCancelable(true);
-
         View view = getActivity().getLayoutInflater().inflate(R.layout.custom_confirmation_order_dialog, null);
         dialog.setContentView(view);
 
@@ -107,16 +116,14 @@ public class OrderPending extends Fragment {
         final Button btnCancel = (Button) dialog.findViewById(R.id.cancelOrderDialog);
 
         Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
-        List<Address> location = new ArrayList<>();
         try {
-            location = geocoder.getFromLocationName(order.getAddress(), 1);
+            List<Address> location = geocoder.getFromLocationName(order.getAddress(), 1);
+            alamat = location.get(0);
+            latitude = alamat.getLatitude();
+            longitude = alamat.getLongitude();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Address alamat = location.get(0);
-        final Double latitude = alamat.getLatitude();
-        final Double longitude = alamat.getLongitude();
-        Log.e("asd", String.valueOf(alamat));
 
         viewMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,6 +141,10 @@ public class OrderPending extends Fragment {
         btnConfirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DatabaseReference dbOrder = FirebaseDatabase.getInstance().getReference().child("Orders").child(order.getId());
+                Map<String, Object> update = new HashMap<String, Object>();
+                update.put("status_order","accept");
+                dbOrder.updateChildren(update);
                 dialog.dismiss();
             }
         });
@@ -141,6 +152,10 @@ public class OrderPending extends Fragment {
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                DatabaseReference dbOrder = FirebaseDatabase.getInstance().getReference().child("Orders").child(order.getId());
+                Map<String, Object> update = new HashMap<String, Object>();
+                update.put("status_order","cancel");
+                dbOrder.updateChildren(update);
                 dialog.dismiss();
             }
         });
