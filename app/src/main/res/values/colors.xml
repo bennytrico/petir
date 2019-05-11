@@ -6,5 +6,8 @@
     <color name="defaulButton">#FFC107</color>
     <color name="cancelButton">#FF0000</color>
     
-    <color name="white">#fff</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#050505</color>
+    <color name="red">#FF0000</color>
+    <color name="grey">#E2E2E2</color>
 </resources>

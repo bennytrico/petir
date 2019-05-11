@@ -6,6 +6,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,12 +73,11 @@ public class OrderAccepted extends Fragment {
                             Order r = listViewOrderAdapter.getItem(position);
                             if (r != null) {
                                 String orderJson = gson.toJson(r);
-
-                                if (r.getStatus_order().equals("Service Rutin")) {
+                                if (r.getType_order().equals("Service Rutin")) {
                                     Intent intent = new Intent(getActivity().getBaseContext(), OrderAcceptedServiceRutin.class);
                                     intent.putExtra("ORDER_SELECTED",orderJson);
                                     startActivity(intent);
-                                } else if (r.getStatus_order().equals("Check Up")) {
+                                } else if (r.getType_order().equals("Check Up")) {
                                     Intent intent = new Intent(getActivity().getBaseContext(), OrderAcceptedCheckUp.class);
                                     intent.putExtra("ORDER_SELECTED",orderJson);
                                     startActivity(intent);

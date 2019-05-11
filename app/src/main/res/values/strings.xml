@@ -9,5 +9,8 @@
     <string name="canceledOrder">Pesanan dibatalkan</string>
     <string name="serviceDone">Pesanan selesai</string>
     <string name="waitForDate">Tunggu waktu pesanan</string>
+    
+    <string name="statusOnProgress">Dikerjakan</string>
+    <string name="statusDone">Selesai</string>
 
 </resources>
