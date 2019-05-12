@@ -1,6 +1,9 @@
 package com.example.petir.OrderAccepted.OrderAcceptedServiceRutin;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -19,15 +22,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 public class OrderAcceptedServiceRutin extends AppCompatActivity {
 
 
     private Boolean customerAgree;
     private Boolean montirAgree;
+    private Address alamat;
+    private Double latitude;
+    private Double longitude;
 
     TextView seeMap;
     TextView address;
@@ -80,6 +89,27 @@ public class OrderAcceptedServiceRutin extends AppCompatActivity {
         });
 
         address.setText(order.getAddress());
+        Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
+        try {
+            List<Address> location = geocoder.getFromLocationName(order.getAddress(), 1);
+            alamat = location.get(0);
+            latitude = alamat.getLatitude();
+            longitude = alamat.getLongitude();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        seeMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String map = "https://www.google.com/maps/search/?api=1&query="+order.getAddress()+","+latitude+","+longitude;
+                Uri gmmIntentUri = Uri.parse(map);
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+                mapIntent.setPackage("com.google.android.apps.maps");
+                if (mapIntent.resolveActivity(getApplication().getPackageManager()) != null) {
+                    startActivity(mapIntent);
+                }
+            }
+        });
     }
 
     public void getIntentValue () {
