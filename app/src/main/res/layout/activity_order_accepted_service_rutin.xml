@@ -46,7 +46,8 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="20dp"
+                    android:layout_marginLeft="10dp"
+                    android:textAlignment="textStart"
                     android:textStyle="bold"
                     android:id="@+id/addressOrderAcceptedServiceRutin"/>
             </LinearLayout>
@@ -58,9 +59,9 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
-                android:gravity="center"
-                android:textSize="20dp"
+                android:layout_marginLeft="10dp"
+                android:textAlignment="textStart"
+                android:paddingBottom="20dp"
                 android:id="@+id/statusOrderAcceptedServiceRutin"/>
         </LinearLayout>
         <LinearLayout
