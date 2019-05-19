@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".OrderAccepted.OrderAcceptedCheckup.OrderAcceptedCheckUp"></activity>
+        <activity android:name=".Wallet.Wallet"></activity>
+        <activity android:name=".OrderAccepted.OrderAcceptedCheckup.OrderAcceptedCheckUp" />
         <activity android:name=".OrderAccepted.OrderAcceptedServiceRutin.OrderAcceptedServiceRutin" />
         <activity android:name=".OrderAccepted.OrderAccepted" />
         <activity android:name=".OrderPending.OrderPending" />

@@ -5,12 +5,15 @@
         android:id="@+id/order"
         android:title="Profil"
         android:icon="@drawable/ic_person_black_24dp">
-
+    </item>
+    <item
+        android:id="@+id/wallet"
+        android:title="Dompetmu"
+        android:icon="@drawable/ic_account_balance_wallet_black_24dp">
     </item>
     <item
         android:id="@+id/logout"
         android:title="Keluar"
         android:icon="@drawable/ic_exit_to_app_black_24dp">
-
     </item>
 </menu>
