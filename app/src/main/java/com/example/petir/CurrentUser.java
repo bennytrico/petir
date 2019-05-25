@@ -24,6 +24,12 @@ public class CurrentUser {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 montir = dataSnapshot.getValue(Montir.class);
+                currentUserBankAccountName = montir.getBank_account_name();
+                currentUserBankAccountNumber = montir.getBank_account_number();
+                currentUserBank = montir.getBank();
+                currentUserEmail = montir.getEmail();
+                currentUserName = montir.getName();
+                currentUserWallet = montir.getWallet();
             }
 
             @Override

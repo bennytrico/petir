@@ -18,6 +18,8 @@ import com.example.petir.OrderPending.OrderPending;
 import com.example.petir.Wallet.Wallet;
 import com.google.firebase.auth.FirebaseAuth;
 
+import static com.example.petir.CurrentUser.getCurrentMontirData;
+
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener{
 
     private ActionBarDrawerToggle abdt;
@@ -119,6 +121,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     startActivity(intent);
                 } else if (id == R.id.wallet) {
                     Intent intent = new Intent(getApplicationContext(), Wallet.class);
+                    getCurrentMontirData();
                     startActivity(intent);
                 }
 
