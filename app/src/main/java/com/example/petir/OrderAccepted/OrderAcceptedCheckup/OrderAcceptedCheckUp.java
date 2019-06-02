@@ -207,7 +207,7 @@ public class OrderAcceptedCheckUp extends AppCompatActivity {
         changeStatusOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dbOrder.child(order.getId()).child("flag_customer_agree").setValue(true);
+                dbOrder.child(order.getId()).child("flag_montir_agree").setValue(true);
                 dborderUpdateCheckUpList.updateChildren(updated);
                 finish();
             }
@@ -236,7 +236,7 @@ public class OrderAcceptedCheckUp extends AppCompatActivity {
         changeStatusOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dbOrder.child(order.getId()).child("flag_customer_agree").setValue(true);
+                dbOrder.child(order.getId()).child("flag_montir_agree").setValue(true);
                 finish();
             }
         });

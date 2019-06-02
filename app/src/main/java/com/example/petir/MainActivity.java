@@ -1,5 +1,6 @@
 package com.example.petir;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     FirebaseAuth mAuth;
     private Boolean flag = true;
 
+    @SuppressLint("WrongThread")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         navigation();
         loadFragment(new OrderPending());
         navigationBottom();
-
+        FirebaseIDService service = new FirebaseIDService();
     }
 
     @Override
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             handler.postDelayed(r, 1000);
         } else{
             FirebaseAuth.getInstance().signOut();
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
