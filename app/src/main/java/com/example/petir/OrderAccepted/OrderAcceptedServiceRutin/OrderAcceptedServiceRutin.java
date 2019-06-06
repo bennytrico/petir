@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -92,16 +93,18 @@ public class OrderAcceptedServiceRutin extends AppCompatActivity {
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
         try {
             List<Address> location = geocoder.getFromLocationName(order.getAddress(), 1);
-            alamat = location.get(0);
-            latitude = alamat.getLatitude();
-            longitude = alamat.getLongitude();
+            if (location.size() > 0) {
+                alamat = location.get(0);
+                latitude = alamat.getLatitude();
+                longitude = alamat.getLongitude();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
         seeMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String map = "https://www.google.com/maps/search/?api=1&query="+order.getAddress()+","+latitude+","+longitude;
+                String map = "https://www.google.com/maps/search/?api=1&query="+order.getAddress();
                 Uri gmmIntentUri = Uri.parse(map);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");

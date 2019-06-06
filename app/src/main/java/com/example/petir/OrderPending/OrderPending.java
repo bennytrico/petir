@@ -19,6 +19,14 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.petir.Order;
 import com.example.petir.R;
 import com.example.petir.adapter.OrderAdapter;
@@ -30,6 +38,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -79,7 +88,9 @@ public class OrderPending extends Fragment {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             Order r = listViewOrderAdapter.getItem(position);
+                            Log.e("alamat",r.getAddress());
                             if (r != null) {
+                                Log.e("alamataaaaaa",r.getAddress());
                                 showDialogOliGanda(r);
                             }
                         }
@@ -114,13 +125,18 @@ public class OrderPending extends Fragment {
 
         Button btnConfirm = (Button) dialog.findViewById(R.id.confirmOrderDialog);
         final Button btnCancel = (Button) dialog.findViewById(R.id.cancelOrderDialog);
+        Geocoder geocoder = new Geocoder(getContext());
+        List<Address> location;
 
-        Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
         try {
-            List<Address> location = geocoder.getFromLocationName(order.getAddress(), 1);
-            alamat = location.get(0);
-            latitude = alamat.getLatitude();
-            longitude = alamat.getLongitude();
+            location = geocoder.getFromLocationName(order.getAddress(), 5);
+            Geocoder.isPresent();
+
+            if (location.size() > 0) {
+                alamat = location.get(0);
+                latitude = alamat.getLatitude();
+                longitude = alamat.getLongitude();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -128,7 +144,7 @@ public class OrderPending extends Fragment {
         viewMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String map = "https://www.google.com/maps/search/?api=1&query="+order.getAddress()+","+latitude+","+longitude;
+                String map = "https://www.google.com/maps/search/?api=1&query="+order.getAddress();
                 Uri gmmIntentUri = Uri.parse(map);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");

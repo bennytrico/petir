@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -106,16 +107,18 @@ public class OrderAcceptedCheckUp extends AppCompatActivity {
         Geocoder geocoder = new Geocoder(getApplicationContext(), Locale.getDefault());
         try {
             List<Address> location = geocoder.getFromLocationName(order.getAddress(), 1);
-            alamat = location.get(0);
-            latitude = alamat.getLatitude();
-            longitude = alamat.getLongitude();
+            if (location.size() > 0) {
+                alamat = location.get(0);
+                latitude = alamat.getLatitude();
+                longitude = alamat.getLongitude();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
         seeMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String map = "https://www.google.com/maps/search/?api=1&query="+order.getAddress()+","+latitude+","+longitude;
+                String map = "https://www.google.com/maps/search/?api=1&query="+order.getAddress();
                 Uri gmmIntentUri = Uri.parse(map);
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
@@ -258,14 +261,30 @@ public class OrderAcceptedCheckUp extends AppCompatActivity {
         });
     }
     public void checkValueAgreement () {
-        if (order.getStatus_order().equals("accept") && customerAgree && montirAgree) {
-            dbOrder.child(order.getId()).child("status_order").setValue("process");
-            dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
-            dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
-        } else if (order.getStatus_order().equals("process") && customerAgree && montirAgree) {
-            dbOrder.child(order.getId()).child("status_order").setValue("done");
-            dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
-            dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
+        if (order.getType_order().equals("Service Rutin")) {
+            if (order.getStatus_order().equals("accept") && customerAgree && montirAgree) {
+                dbOrder.child(order.getId()).child("status_order").setValue("process");
+                dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
+                dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
+            } else if (order.getStatus_order().equals("process") && customerAgree && montirAgree) {
+                dbOrder.child(order.getId()).child("status_order").setValue("done");
+                dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
+                dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
+            }
+        } else if (order.getType_order().equals("Check Up")) {
+            if (order.getStatus_order().equals("accept") && customerAgree && montirAgree) {
+                dbOrder.child(order.getId()).child("status_order").setValue("process");
+                dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
+                dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
+            } else if (order.getStatus_order().equals("process") && customerAgree && montirAgree) {
+                dbOrder.child(order.getId()).child("status_order").setValue("repair");
+                dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
+                dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
+            } else if (order.getStatus_order().equals("repair") && customerAgree && montirAgree) {
+                dbOrder.child(order.getId()).child("status_order").setValue("done");
+                dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
+                dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
+            }
         }
     }
 }

@@ -12,5 +12,5 @@
     
     <string name="statusOnProgress">Dikerjakan</string>
     <string name="statusDone">Selesai</string>
-
+    <string name="apiGoogleKey">AIzaSyA9lnmiMfcDHaA05UWj-iF1MZJj5TZc8is</string>
 </resources>
