@@ -88,9 +88,7 @@ public class OrderPending extends Fragment {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             Order r = listViewOrderAdapter.getItem(position);
-                            Log.e("alamat",r.getAddress());
                             if (r != null) {
-                                Log.e("alamataaaaaa",r.getAddress());
                                 showDialogOliGanda(r);
                             }
                         }
