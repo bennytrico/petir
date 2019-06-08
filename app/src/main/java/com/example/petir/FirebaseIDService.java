@@ -2,6 +2,7 @@ package com.example.petir;
 
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -24,7 +25,7 @@ public class FirebaseIDService extends FirebaseInstanceIdService {
         sendRegistrationToServer(refreshedToken);
     }
     private void sendRegistrationToServer(String token) {
-        DatabaseReference dbMontir = FirebaseDatabase.getInstance().getReference("Montirs").child(currentUserID);
+        DatabaseReference dbMontir = FirebaseDatabase.getInstance().getReference("Montirs").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
         Map<String, Object> updateToken = new HashMap<String, Object>();
         updateToken.put("fcm_token",token);
         dbMontir.updateChildren(updateToken);

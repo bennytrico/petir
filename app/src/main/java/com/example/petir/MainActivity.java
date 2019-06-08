@@ -18,6 +18,11 @@ import com.example.petir.OrderAccepted.OrderAccepted;
 import com.example.petir.OrderPending.OrderPending;
 import com.example.petir.Wallet.Wallet;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.example.petir.CurrentUser.getCurrentMontirData;
 
@@ -44,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         loadFragment(new OrderPending());
         navigationBottom();
         FirebaseIDService service = new FirebaseIDService();
+        service.onTokenRefresh();
     }
 
     @Override
@@ -118,6 +124,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     mAuth.getInstance().signOut();
                     Toast.makeText(MainActivity.this, "Logout", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                    DatabaseReference dbMontir = FirebaseDatabase.getInstance().getReference("Montirs").child(mAuth.getCurrentUser().getUid());
+                    Map<String, Object> update = new HashMap<String, Object>();
+                    update.put("fcm_token","");
+                    dbMontir.updateChildren(update);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);

@@ -27,9 +27,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.petir.Montir;
 import com.example.petir.Order;
 import com.example.petir.R;
+import com.example.petir.Rating;
 import com.example.petir.adapter.OrderAdapter;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -55,6 +59,7 @@ public class OrderPending extends Fragment {
     private Address alamat;
     private Double latitude;
     private Double longitude;
+
 
     @Nullable
     @Override
@@ -159,6 +164,56 @@ public class OrderPending extends Fragment {
                 Map<String, Object> update = new HashMap<String, Object>();
                 update.put("status_order","accept");
                 dbOrder.updateChildren(update);
+                DatabaseReference dbRating = FirebaseDatabase.getInstance().getReference("Ratings").child(order.getMontir().getId());
+                dbRating.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            final Rating rtg = dataSnapshot.getValue(Rating.class);
+                            DatabaseReference dbRatingUpdate = FirebaseDatabase.getInstance().getReference("Ratings").child(order.getMontir().getId());
+                            Integer calculateCountOrder = rtg.getCount_order() + 1;
+
+                            Map<String, Object> updateRating = new HashMap<String, Object>();
+                            updateRating.put("count_order",calculateCountOrder);
+                            dbRatingUpdate.updateChildren(updateRating);
+
+
+                        } else {
+                            DatabaseReference dbMontir = FirebaseDatabase.getInstance().getReference("Montirs").child(order.getMontir().getId());
+                            dbMontir.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    Montir m = dataSnapshot.getValue(Montir.class);
+
+                                    Double averageRating = m.getRating();
+                                    Rating rating = new Rating(
+                                            0.0,
+                                            1,
+                                            averageRating
+                                    );
+                                    FirebaseDatabase.getInstance().getReference("Ratings")
+                                            .child(order.getMontir().getId())
+                                            .setValue(rating).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                        @Override
+                                        public void onComplete(@NonNull Task<Void> task) {
+
+                                        }
+                                    });
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 dialog.dismiss();
             }
         });
