@@ -14,8 +14,11 @@ import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.petir.Customer;
 import com.example.petir.Order;
 import com.example.petir.R;
+import com.example.petir.Rating;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -93,12 +96,58 @@ public class OrderAcceptedCheckUp extends AppCompatActivity {
             statusOrder.setText(R.string.serviceDone);
             changeStatusOrder.setVisibility(View.GONE);
             cancelButtonOrder.setVisibility(View.GONE);
+        } else if (order.getStatus_order().equals("end")) {
+            statusOrder.setText(R.string.serviceDone);
+            changeStatusOrder.setVisibility(View.GONE);
+            cancelButtonOrder.setVisibility(View.GONE);
         }
 
         cancelButtonOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 dbOrder.child(order.getId()).child("status_order").setValue("cancel");
+                final DatabaseReference updateCustomer = FirebaseDatabase.getInstance().getReference("Customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                DatabaseReference dbCustomer = FirebaseDatabase.getInstance().getReference("Customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                dbCustomer.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Customer c = dataSnapshot.getValue(Customer.class);
+                        Integer wallet = c.getWallet();
+                        Map<String, Object> update = new HashMap<String, Object>();
+                        update.put("wallet", wallet + order.getAmount());
+                        updateCustomer.updateChildren(update);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+                DatabaseReference dbRating = FirebaseDatabase.getInstance().getReference("Ratings").child(order.getMontir().getId());
+                dbRating.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()) {
+                            Rating rtg = dataSnapshot.getValue(Rating.class);
+                            DatabaseReference dbMontirUpdate = FirebaseDatabase.getInstance().getReference("Montirs").child(order.getMontir().getId());
+                            DatabaseReference dbRatingUpdate = FirebaseDatabase.getInstance().getReference("Ratings").child(order.getMontir().getId());
+
+                            Map<String, Object> updateMontir = new HashMap<String, Object>();
+                            updateMontir.put("rating",rtg.getRating_montir() / rtg.getCount_order());
+                            dbMontirUpdate.updateChildren(updateMontir);
+
+                            Map<String, Object> updateRating = new HashMap<String, Object>();
+                            updateRating.put("average_rating",rtg.getRating_montir() / rtg.getCount_order());
+                            updateRating.put("rating_montir",rtg.getRating_montir());
+                            dbRatingUpdate.updateChildren(updateRating);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
                 finish();
             }
         });

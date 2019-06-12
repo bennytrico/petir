@@ -1,8 +1,10 @@
 package com.example.petir.Wallet;
 
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -11,10 +13,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.petir.Montir;
 import com.example.petir.R;
 import com.example.petir.WalletConfirmations;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -51,6 +57,11 @@ public class Wallet extends AppCompatActivity {
 
     DatabaseReference dbMontir;
 
+    private String bank;
+    private String bankName;
+    private String nomorRekening;
+    private Integer wallet;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,13 +83,30 @@ public class Wallet extends AppCompatActivity {
         submitEditAccountBank = (Button) findViewById(R.id.submitRequestChangeAkunBank);
 
         dbMontir = FirebaseDatabase.getInstance().getReference("Montirs").child(currentUserID);
+        dbMontir.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Montir m = dataSnapshot.getValue(Montir.class);
+                bank = m.getBank();
+                bankName = m.getBank_account_name();
+                nomorRekening = m.getBank_account_number();
+                wallet = m.getWallet();
+
+
+                currentBankAccountName.setText(bankName);
+                currentBankAccountNumber.setText(nomorRekening);
+                currentBankName.setText(bank);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         flagValidationEditBankAccount = true;
         flagValidationRequestWithdrawal = true;
 
-        currentBankAccountName.setText(currentUserBankAccountName);
-        currentBankAccountNumber.setText(currentUserBankAccountNumber);
-        currentBankName.setText(currentUserBank);
 
         buttonDropDownRequestWithdrawal.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -138,6 +166,7 @@ public class Wallet extends AppCompatActivity {
             update.put("bank_account_number",bankAccountNumber);
             dbMontir.updateChildren(update);
             Toast.makeText(this,"edit berhasil",Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
     public void validationRequestWithdrawal () {

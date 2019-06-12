@@ -27,6 +27,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.example.petir.Customer;
 import com.example.petir.Montir;
 import com.example.petir.Order;
 import com.example.petir.R;
@@ -222,6 +223,24 @@ public class OrderPending extends Fragment {
             @Override
             public void onClick(View v) {
                 DatabaseReference dbOrder = FirebaseDatabase.getInstance().getReference().child("Orders").child(order.getId());
+                final DatabaseReference updateCustomer = FirebaseDatabase.getInstance().getReference("Customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                DatabaseReference dbCustomer = FirebaseDatabase.getInstance().getReference().child("Customers").child(order.getCustomer_id());
+                dbCustomer.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        Customer c = dataSnapshot.getValue(Customer.class);
+                        Integer wallet = c.getWallet();
+                        Map<String, Object> update = new HashMap<String, Object>();
+                        update.put("wallet", wallet + order.getAmount());
+                        updateCustomer.updateChildren(update);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
                 Map<String, Object> update = new HashMap<String, Object>();
                 update.put("status_order","cancel");
                 dbOrder.updateChildren(update);
