@@ -95,7 +95,7 @@ public class OrderPending extends Fragment {
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             Order r = listViewOrderAdapter.getItem(position);
                             if (r != null) {
-                                showDialogOliGanda(r);
+                                showDialog(r);
                             }
                         }
                     });
@@ -113,7 +113,7 @@ public class OrderPending extends Fragment {
 
         return view;
     }
-    private void showDialogOliGanda(final Order order) {
+    private void showDialog(final Order order) {
         if (getActivity() != null) {
             dialog = new Dialog(getActivity());
         }

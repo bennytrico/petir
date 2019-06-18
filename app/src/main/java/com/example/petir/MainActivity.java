@@ -17,6 +17,7 @@ import android.widget.Toast;
 import com.example.petir.OrderAccepted.OrderAccepted;
 import com.example.petir.OrderPending.OrderPending;
 import com.example.petir.Wallet.Wallet;
+import com.example.petir.helper.FormatNumber;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
     FirebaseAuth mAuth;
     private Boolean flag = true;
+    FormatNumber formatNumber = new FormatNumber();
 
     @SuppressLint("WrongThread")
     @Override
