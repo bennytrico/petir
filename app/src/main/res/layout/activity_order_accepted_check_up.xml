@@ -61,6 +61,7 @@
                 android:layout_marginLeft="10dp"
                 android:textAlignment="textStart"
                 android:paddingBottom="20dp"
+                android:textStyle="bold"
                 android:id="@+id/statusOrderAcceptedCheckUp"/>
         </LinearLayout>
         <LinearLayout
@@ -79,6 +80,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:visibility="visible"
+                android:layout_marginBottom="10dp"
                 android:id="@+id/layoutCheckBoxOrderAcceptedCheckUp">
                 <GridLayout
                     android:layout_width="wrap_content"
@@ -89,38 +91,29 @@
                     <CheckBox
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="All"
+                        android:text="Semua"
                         android:id="@+id/checkboxAll"/>
                     <CheckBox
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Electricity"
+                        android:text="Kelistrikan"
                         android:id="@+id/checkboxElectricity"/>
                     <CheckBox
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Mechanical"
+                        android:text="Mekanis"
                         android:id="@+id/checkboxMechanical"/>
                     <CheckBox
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Bracking system"
+                        android:text="Sistem pengereman"
                         android:id="@+id/checkboxBrackingSystem"/>
                     <CheckBox
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Engine"
+                        android:text="Mesin"
                         android:id="@+id/checkboxEngine"/>
                 </GridLayout>
-                <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="20dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@color/defaulButton"
-                    android:text="filter"/>
-                
             </LinearLayout>
             <Button
                 android:layout_width="match_parent"

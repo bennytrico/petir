@@ -19,7 +19,7 @@
             android:layout_marginTop="20dp"
             android:columnCount="2">
             <Button
-                android:background="@color/colorPrimary"
+                android:background="@color/defaulButton"
                 android:textColor="@color/white"
                 android:id="@+id/agreeTopUp"
                 android:text="iya"/>

@@ -1,5 +1,6 @@
 package com.example.petir.OrderAccepted.OrderAcceptedCheckup;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -59,6 +60,7 @@ public class OrderAcceptedCheckUp extends AppCompatActivity {
 
     Order order = new Order();
     DatabaseReference dbOrder;
+    String update;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,50 +107,70 @@ public class OrderAcceptedCheckUp extends AppCompatActivity {
         cancelButtonOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dbOrder.child(order.getId()).child("status_order").setValue("cancel");
-                final DatabaseReference updateCustomer = FirebaseDatabase.getInstance().getReference("Customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                DatabaseReference dbCustomer = FirebaseDatabase.getInstance().getReference("Customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                dbCustomer.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        Customer c = dataSnapshot.getValue(Customer.class);
-                        Integer wallet = c.getWallet();
-                        Map<String, Object> update = new HashMap<String, Object>();
-                        update.put("wallet", wallet + order.getAmount());
-                        updateCustomer.updateChildren(update);
-                    }
+                final Dialog dialog = new Dialog(OrderAcceptedCheckUp.this);
+                dialog.setContentView(R.layout.dialog_confirmation);
+                dialog.setTitle("Info");
 
+                Button agree = (Button) dialog.findViewById(R.id.agreeTopUp);
+                Button disAgree = (Button) dialog.findViewById(R.id.disagreeTopUp);
+                disAgree.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                    public void onClick(View v) {
+                        dialog.dismiss();
                     }
                 });
-                DatabaseReference dbRating = FirebaseDatabase.getInstance().getReference("Ratings").child(order.getMontir().getId());
-                dbRating.addListenerForSingleValueEvent(new ValueEventListener() {
+
+                agree.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            Rating rtg = dataSnapshot.getValue(Rating.class);
-                            DatabaseReference dbMontirUpdate = FirebaseDatabase.getInstance().getReference("Montirs").child(order.getMontir().getId());
-                            DatabaseReference dbRatingUpdate = FirebaseDatabase.getInstance().getReference("Ratings").child(order.getMontir().getId());
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                        dbOrder.child(order.getId()).child("status_order").setValue("cancel");
+                        final DatabaseReference updateCustomer = FirebaseDatabase.getInstance().getReference("Customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        DatabaseReference dbCustomer = FirebaseDatabase.getInstance().getReference("Customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        dbCustomer.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                Customer c = dataSnapshot.getValue(Customer.class);
+                                Integer wallet = c.getWallet();
+                                Map<String, Object> update = new HashMap<String, Object>();
+                                update.put("wallet", wallet + order.getAmount());
+                                updateCustomer.updateChildren(update);
+                            }
 
-                            Map<String, Object> updateMontir = new HashMap<String, Object>();
-                            updateMontir.put("rating",rtg.getRating_montir() / rtg.getCount_order());
-                            dbMontirUpdate.updateChildren(updateMontir);
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                            Map<String, Object> updateRating = new HashMap<String, Object>();
-                            updateRating.put("average_rating",rtg.getRating_montir() / rtg.getCount_order());
-                            updateRating.put("rating_montir",rtg.getRating_montir());
-                            dbRatingUpdate.updateChildren(updateRating);
-                        }
-                    }
+                            }
+                        });
+                        DatabaseReference dbRating = FirebaseDatabase.getInstance().getReference("Ratings").child(order.getMontir().getId());
+                        dbRating.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                if (dataSnapshot.exists()) {
+                                    Rating rtg = dataSnapshot.getValue(Rating.class);
+                                    DatabaseReference dbMontirUpdate = FirebaseDatabase.getInstance().getReference("Montirs").child(order.getMontir().getId());
+                                    DatabaseReference dbRatingUpdate = FirebaseDatabase.getInstance().getReference("Ratings").child(order.getMontir().getId());
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                                    Map<String, Object> updateMontir = new HashMap<String, Object>();
+                                    updateMontir.put("rating",rtg.getRating_montir() / rtg.getCount_order());
+                                    dbMontirUpdate.updateChildren(updateMontir);
 
+                                    Map<String, Object> updateRating = new HashMap<String, Object>();
+                                    updateRating.put("average_rating",rtg.getRating_montir() / rtg.getCount_order());
+                                    updateRating.put("rating_montir",rtg.getRating_montir());
+                                    dbRatingUpdate.updateChildren(updateRating);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                        finish();
                     }
                 });
-                finish();
+                dialog.show();
             }
         });
 
@@ -187,78 +209,87 @@ public class OrderAcceptedCheckUp extends AppCompatActivity {
         changeStatusOrder.setText(R.string.statusDone);
         getValueAgreement();
         final Map<String, Object> updated = new HashMap<String, Object>();
-
-        if (order.getCheck_up_list().getAll())
+        if (order.getCheck_up_list().contains("All"))
             checkBoxAll.setChecked(true);
-        else if (order.getCheck_up_list().getBracking_system())
+        else if (order.getCheck_up_list().contains("Breaking system"))
             checkBoxBrackingSystem.setChecked(true);
-        else if (order.getCheck_up_list().getElectrical())
+        else if (order.getCheck_up_list().contains("Electrical"))
             checkBoxElectricity.setChecked(true);
-        else if (order.getCheck_up_list().getEngine())
+        else if (order.getCheck_up_list().contains("Engine"))
             checkBoxEngine.setChecked(true);
-        else if (order.getCheck_up_list().getMechanical())
+        else if (order.getCheck_up_list().contains("Mechanical"))
             checkBoxMechanical.setChecked(true);
 
-        updated.put("all",order.getCheck_up_list().getAll());
-        updated.put("engine",order.getCheck_up_list().getEngine());
-        updated.put("mechanical",order.getCheck_up_list().getMechanical());
-        updated.put("electrical",order.getCheck_up_list().getElectrical());
-        updated.put("bracking_system",order.getCheck_up_list().getBracking_system());
         checkBoxAll.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(((CheckBox)v).isChecked()){
-                    updated.put("all",true);
+                    checkBoxBrackingSystem.setChecked(false);
+                    checkBoxElectricity.setChecked(false);
+                    checkBoxEngine.setChecked(false);
+                    checkBoxMechanical.setChecked(false);
                 } else if (!((CheckBox)v).isChecked()) {
-                    updated.put("all",false);
+
                 }
             }
         });
-        checkBoxEngine.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(((CheckBox)v).isChecked()){
-                    updated.put("engine",true);
-                } else if (!((CheckBox)v).isChecked()) {
-                    updated.put("engine",false);
-                }
-            }
-        });
-        checkBoxMechanical.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(((CheckBox)v).isChecked()){
-                    updated.put("mechanical",true);
-                } else if (!((CheckBox)v).isChecked()) {
-                    updated.put("mechanical",false);
-                }
-            }
-        });
-        checkBoxElectricity.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(((CheckBox)v).isChecked()){
-                    updated.put("electrical",true);
-                } else if (!((CheckBox)v).isChecked()) {
-                    updated.put("electrical",false);
-                }
-            }
-        });
-        checkBoxBrackingSystem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(((CheckBox)v).isChecked()){
-                    updated.put("bracking_system",true);
-                } else if (!((CheckBox)v).isChecked()) {
-                    updated.put("bracking_system",false);
-                }
-            }
-        });
+//        checkBoxEngine.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(((CheckBox)v).isChecked()){
+//                    updated.put("engine",true);
+//                } else if (!((CheckBox)v).isChecked()) {
+//                    updated.put("engine",false);
+//                }
+//            }
+//        });
+//        checkBoxMechanical.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(((CheckBox)v).isChecked()){
+//                    updated.put("mechanical",true);
+//                } else if (!((CheckBox)v).isChecked()) {
+//                    updated.put("mechanical",false);
+//                }
+//            }
+//        });
+//        checkBoxElectricity.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(((CheckBox)v).isChecked()){
+//                    updated.put("electrical",true);
+//                } else if (!((CheckBox)v).isChecked()) {
+//                    updated.put("electrical",false);
+//                }
+//            }
+//        });
+//        checkBoxBrackingSystem.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(((CheckBox)v).isChecked()){
+//                    updated.put("bracking_system",true);
+//                } else if (!((CheckBox)v).isChecked()) {
+//                    updated.put("bracking_system",false);
+//                }
+//            }
+//        });
         final DatabaseReference dborderUpdateCheckUpList = FirebaseDatabase.getInstance().getReference().child("Orders")
-                                                            .child(order.getId()).child("check_up_list");
+                                                            .child(order.getId());
         changeStatusOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (checkBoxAll.isChecked())
+                    update = "All";
+                else if (checkBoxMechanical.isChecked())
+                    update += "Mechanical ,";
+                else if (checkBoxEngine.isChecked())
+                    update += "Engine ,";
+                else if (checkBoxElectricity.isChecked())
+                    update += "Electrical ,";
+                else if (checkBoxBrackingSystem.isChecked())
+                    update += "Breaking system ,";
+
+                updated.put("check_up_list",update);
                 dbOrder.child(order.getId()).child("flag_montir_agree").setValue(true);
                 dborderUpdateCheckUpList.updateChildren(updated);
                 finish();

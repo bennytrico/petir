@@ -3,17 +3,17 @@ package com.example.petir;
 public class Order {
     private String customer_id,address,type_order,transmition,brand,type_motor,date,time,status_order,name_customer,
             no_handphone_customer,number_plate,type_checkup,id;
-    private Boolean primary_oil,secondary_oil,flag_customer_agree,flag_montir_agree;
+    private Boolean oli_mesin,oli_gardan,flag_customer_agree,flag_montir_agree;
     private Integer amount;
 
-    private CheckUpList check_up_list;
+    private String check_up_list;
     private Montir montir;
     public Order(){
 
     }
     public void OrderCheckup (String customer_id,String address, String type_order, String transmition,
                   String brand, String type_motor, String date, String time,String status_order,
-                  Boolean flag_customer_agree,Boolean flag_montir_agree,Integer amount,Montir montir,CheckUpList check_up_list,
+                  Boolean flag_customer_agree,Boolean flag_montir_agree,Integer amount,Montir montir,String check_up_list,
                   String name_customer, String no_handphone_customer,String number_plate) {
         this.customer_id = customer_id;
         this.address = address;
@@ -35,7 +35,7 @@ public class Order {
     }
 
     public Order(String customer_id, String address, String type_order, String transmition,
-                 String brand, String type_motor, String date, String time, String status_order, Boolean oli_ganda,
+                 String brand, String type_motor, String date, String time, String status_order, Boolean oli_gardan,
                  Boolean oli_mesin, Boolean flag_customer_agree, Boolean flag_montir_agree, Integer amount, Montir montir,
                  String name_customer, String no_handphone_customer, String number_plate) {
         this.customer_id = customer_id;
@@ -47,8 +47,8 @@ public class Order {
         this.date = date;
         this.time = time;
         this.status_order = status_order;
-        this.secondary_oil = oli_ganda;
-        this.primary_oil = oli_mesin;
+        this.oli_gardan = oli_gardan;
+        this.oli_mesin = oli_mesin;
         this.flag_customer_agree = flag_customer_agree;
         this.flag_montir_agree = flag_montir_agree;
         this.amount = amount;
@@ -131,19 +131,19 @@ public class Order {
     }
 
     public Boolean getOli_mesin() {
-        return primary_oil;
+        return oli_mesin;
     }
 
     public void setOli_mesin(Boolean oli_mesin) {
-        this.primary_oil = oli_mesin;
+        this.oli_mesin = oli_mesin;
     }
 
     public Boolean getOli_ganda() {
-        return secondary_oil;
+        return oli_gardan;
     }
 
-    public void setOli_ganda(Boolean oli_ganda) {
-        this.secondary_oil = oli_ganda;
+    public void setOli_ganda(Boolean oli_gardan) {
+        this.oli_gardan = oli_gardan;
     }
 
     public Boolean getFlag_customer_agree() {
@@ -218,11 +218,11 @@ public class Order {
         this.id = id;
     }
 
-    public CheckUpList getCheck_up_list() {
+    public String getCheck_up_list() {
         return check_up_list;
     }
 
-    public void setCheck_up_list(CheckUpList check_up_list) {
+    public void setCheck_up_list(String check_up_list) {
         this.check_up_list = check_up_list;
     }
 }

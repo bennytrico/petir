@@ -51,7 +51,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         loadFragment(new OrderPending());
         navigationBottom();
         FirebaseIDService service = new FirebaseIDService();
-        service.onTokenRefresh();
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            service.onTokenRefresh();
+        }
     }
 
     @Override
@@ -122,13 +124,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                     startActivity(new Intent(getApplicationContext(), ProfilePage.class));
 
                 }else if(id == R.id.logout){
-                    mAuth.getInstance().signOut();
                     Toast.makeText(MainActivity.this, "Logout", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                    DatabaseReference dbMontir = FirebaseDatabase.getInstance().getReference("Montirs").child(mAuth.getCurrentUser().getUid());
+                    DatabaseReference dbMontir = FirebaseDatabase.getInstance().getReference("Montirs").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                     Map<String, Object> update = new HashMap<String, Object>();
                     update.put("fcm_token","");
                     dbMontir.updateChildren(update);
+                    FirebaseAuth.getInstance().signOut();
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);

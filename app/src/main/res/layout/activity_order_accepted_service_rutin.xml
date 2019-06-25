@@ -62,6 +62,7 @@
                 android:layout_marginLeft="10dp"
                 android:textAlignment="textStart"
                 android:paddingBottom="20dp"
+                android:textStyle="bold"
                 android:id="@+id/statusOrderAcceptedServiceRutin"/>
         </LinearLayout>
         <LinearLayout

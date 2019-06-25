@@ -1,5 +1,6 @@
 package com.example.petir;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -29,5 +30,6 @@ public class FirebaseIDService extends FirebaseInstanceIdService {
         Map<String, Object> updateToken = new HashMap<String, Object>();
         updateToken.put("fcm_token",token);
         dbMontir.updateChildren(updateToken);
+
     }
 }
