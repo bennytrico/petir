@@ -118,9 +118,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 int id = menuItem.getItemId();
 
-                if(id == R.id.order){
-//                    startActivity(new Intent(getApplicationContext(), OrderPage.class));
-                    Toast.makeText(MainActivity.this, "a", Toast.LENGTH_SHORT).show();
+                if(id == R.id.profile){
+                    startActivity(new Intent(getApplicationContext(), ProfilePage.class));
 
                 }else if(id == R.id.logout){
                     mAuth.getInstance().signOut();
