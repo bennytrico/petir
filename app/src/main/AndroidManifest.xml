@@ -36,8 +36,8 @@
         <activity android:name=".OrderAccepted.OrderAcceptedServiceRutin.OrderAcceptedServiceRutin" />
         <activity android:name=".OrderAccepted.OrderAccepted" />
         <activity android:name=".OrderPending.OrderPending" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" />
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
     

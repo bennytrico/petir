@@ -63,6 +63,19 @@
                 android:paddingBottom="20dp"
                 android:textStyle="bold"
                 android:id="@+id/statusOrderAcceptedCheckUp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dp"
+                android:text="Nomor telepon"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:textAlignment="textStart"
+                android:paddingBottom="20dp"
+                android:textStyle="bold"
+                android:id="@+id/nomorOrderAcceptedCheckUp"/>
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"

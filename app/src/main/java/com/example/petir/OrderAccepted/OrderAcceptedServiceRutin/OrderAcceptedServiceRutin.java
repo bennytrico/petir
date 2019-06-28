@@ -67,9 +67,10 @@ public class OrderAcceptedServiceRutin extends AppCompatActivity {
         statusOrder = (TextView) findViewById(R.id.statusOrderAcceptedServiceRutin);
         changeStatusOrder = (Button) findViewById(R.id.changeStatusOrderAcceptedServiceRutin);
         cancelButtonOrder = (Button) findViewById(R.id.cancelOrderAcceptedServiceRutin);
+        TextView numberHandphone = (TextView) findViewById(R.id.nomorOrderAcceptedServiceRutin);
         getIntentValue();
         dbOrder = FirebaseDatabase.getInstance().getReference("Orders");
-
+        numberHandphone.setText(order.getNo_handphone_customer());
         if (order.getStatus_order().equals("wait")) {
             statusOrder.setText(R.string.waitConfirmFromMontir);
             changeStatusOrder.setVisibility(View.GONE);

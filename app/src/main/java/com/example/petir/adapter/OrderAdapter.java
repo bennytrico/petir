@@ -64,6 +64,8 @@ public class OrderAdapter extends ArrayAdapter<Order> {
             statusOrder.setText(R.string.processService);
         else if (currentOrder.getStatus_order().equals("done"))
             statusOrder.setText(R.string.serviceDone);
+        else if (currentOrder.getStatus_order().equals("end"))
+            statusOrder.setText(R.string.serviceDone);
 
         if (currentOrder.getType_order().equals("Service Rutin")) {
             LinearLayout kerusakanLayout = (LinearLayout)listItem.findViewById(R.id.layoutKerusakanCheckUp);

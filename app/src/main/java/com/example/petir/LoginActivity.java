@@ -51,6 +51,11 @@ public class LoginActivity extends AppCompatActivity {
         flag = true;
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            Intent startIntent = new Intent(getApplicationContext(), MainActivity.class);
+            startIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(startIntent);
+        }
 
         login.setOnClickListener(new View.OnClickListener() {
             @Override

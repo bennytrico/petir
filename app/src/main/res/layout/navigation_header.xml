@@ -5,11 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:background="@color/colorPrimaryDark">
+    android:background="@color/defaulButton">
     
     <ImageView
         android:layout_width="130dp"
         android:layout_height="130dp"
-        android:background="@drawable/ic_android_black_24dp"/>
-
+        android:background="@drawable/ic_launcher_foreground2"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textSize="20dp"
+        android:text="PETIR"/>
 </LinearLayout>

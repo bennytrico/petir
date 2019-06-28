@@ -76,20 +76,25 @@ public class OrderAcceptedCheckUp extends AppCompatActivity {
         checkBoxMechanical = (CheckBox) findViewById(R.id.checkboxMechanical);
         checkBoxEngine = (CheckBox) findViewById(R.id.checkboxEngine);
         checkBoxLayout = (LinearLayout) findViewById(R.id.layoutCheckBoxOrderAcceptedCheckUp);
+        TextView numberHandphone = (TextView) findViewById(R.id.nomorOrderAcceptedCheckUp);
 
         getIntentValue();
+        numberHandphone.setText(order.getNo_handphone_customer());
         dbOrder = FirebaseDatabase.getInstance().getReference("Orders");
 
         if (order.getStatus_order().equals("wait")) {
             statusOrder.setText(R.string.waitConfirmFromMontir);
             changeStatusOrder.setVisibility(View.GONE);
+            checkBoxLayout.setVisibility(View.GONE);
         }else if (order.getStatus_order().equals("accept")) {
             statusOrder.setText(R.string.confirmFromMontir);
             acceptedOrder();
+            checkBoxLayout.setVisibility(View.GONE);
         }else if (order.getStatus_order().equals("cancel")) {
             statusOrder.setText(R.string.canceledOrder);
             changeStatusOrder.setVisibility(View.GONE);
             cancelButtonOrder.setVisibility(View.GONE);
+            checkBoxLayout.setVisibility(View.GONE);
         }else if (order.getStatus_order().equals("process")) {
             statusOrder.setText(R.string.processService);
             checkBoxLayout.setVisibility(View.VISIBLE);
@@ -98,10 +103,12 @@ public class OrderAcceptedCheckUp extends AppCompatActivity {
             statusOrder.setText(R.string.serviceDone);
             changeStatusOrder.setVisibility(View.GONE);
             cancelButtonOrder.setVisibility(View.GONE);
+            checkBoxLayout.setVisibility(View.GONE);
         } else if (order.getStatus_order().equals("end")) {
             statusOrder.setText(R.string.serviceDone);
             changeStatusOrder.setVisibility(View.GONE);
             cancelButtonOrder.setVisibility(View.GONE);
+            checkBoxLayout.setVisibility(View.GONE);
         }
 
         cancelButtonOrder.setOnClickListener(new View.OnClickListener() {
@@ -342,30 +349,14 @@ public class OrderAcceptedCheckUp extends AppCompatActivity {
         });
     }
     public void checkValueAgreement () {
-        if (order.getType_order().equals("Service Rutin")) {
-            if (order.getStatus_order().equals("accept") && customerAgree && montirAgree) {
-                dbOrder.child(order.getId()).child("status_order").setValue("process");
-                dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
-                dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
-            } else if (order.getStatus_order().equals("process") && customerAgree && montirAgree) {
-                dbOrder.child(order.getId()).child("status_order").setValue("done");
-                dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
-                dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
-            }
-//        } else if (order.getType_order().equals("Check Up")) {
-//            if (order.getStatus_order().equals("accept") && customerAgree && montirAgree) {
-//                dbOrder.child(order.getId()).child("status_order").setValue("process");
-//                dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
-//                dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
-//            } else if (order.getStatus_order().equals("process") && customerAgree && montirAgree) {
-//                dbOrder.child(order.getId()).child("status_order").setValue("repair");
-//                dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
-//                dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
-//            } else if (order.getStatus_order().equals("repair") && customerAgree && montirAgree) {
-//                dbOrder.child(order.getId()).child("status_order").setValue("done");
-//                dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
-//                dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
-//            }
+        if (order.getStatus_order().equals("accept") && customerAgree && montirAgree) {
+            dbOrder.child(order.getId()).child("status_order").setValue("process");
+            dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
+            dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
+        } else if (order.getStatus_order().equals("process") && customerAgree && montirAgree) {
+            dbOrder.child(order.getId()).child("status_order").setValue("done");
+            dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
+            dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
         }
     }
 }

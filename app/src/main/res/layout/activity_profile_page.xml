@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/defaulButton"
                 android:text="Profil"/>
             <TextView
                 android:layout_width="match_parent"
@@ -48,7 +48,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/defaulButton"
                 android:layout_marginBottom="10dp"
                 android:text="Ganti sandi"/>
             <TextView

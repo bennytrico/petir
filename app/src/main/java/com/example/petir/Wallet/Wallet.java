@@ -92,7 +92,7 @@ public class Wallet extends AppCompatActivity {
                 nomorRekening = m.getBank_account_number();
                 wallet = m.getWallet();
 
-
+                currentWalletWalletPage.setText(wallet);
                 currentBankAccountName.setText(bankName);
                 currentBankAccountNumber.setText(nomorRekening);
                 currentBankName.setText(bank);
@@ -177,10 +177,12 @@ public class Wallet extends AppCompatActivity {
         }
         if (amount == null) {
             flagValidationRequestWithdrawal = false;
-            Toast.makeText(this, "amount harus di isi",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Jumlah harus di isi",Toast.LENGTH_SHORT).show();
         } else if (amount > currentUserWallet) {
             Toast.makeText(this,"melebihi dari saldo",Toast.LENGTH_SHORT).show();
             flagValidationRequestWithdrawal = false;
+        } else {
+            flagValidationRequestWithdrawal = true;
         }
         if (flagValidationRequestWithdrawal) {
             DatabaseReference dbWalletConfirmations = FirebaseDatabase.getInstance().getReference("WalletConfirmations");
