@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.petir.Customer;
+import com.example.petir.Montir;
 import com.example.petir.Order;
 import com.example.petir.R;
 import com.example.petir.Rating;
@@ -357,6 +358,22 @@ public class OrderAcceptedCheckUp extends AppCompatActivity {
             dbOrder.child(order.getId()).child("status_order").setValue("done");
             dbOrder.child(order.getId()).child("flag_customer_agree").setValue(false);
             dbOrder.child(order.getId()).child("flag_montir_agree").setValue(false);
+
+            final DatabaseReference dbMontir = FirebaseDatabase.getInstance().getReference("Montirs").child(order.getMontir().getId());
+            dbMontir.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Montir montir = dataSnapshot.getValue(Montir.class);
+                    Map<String, Object> update = new HashMap<String, Object>();
+                    update.put("wallet",montir.getWallet() + (order.getAmount() - 20000));
+                    dbMontir.updateChildren(update);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
         }
     }
 }
