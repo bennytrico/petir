@@ -5,7 +5,7 @@ public class Order {
             no_handphone_customer,number_plate,type_checkup,id;
     private Boolean oli_mesin,oli_gardan,flag_customer_agree,flag_montir_agree;
     private Integer amount;
-
+    private Double latitude, longitude;
     private String check_up_list;
     private Montir montir;
     public Order(){
@@ -14,7 +14,8 @@ public class Order {
     public void OrderCheckup (String customer_id,String address, String type_order, String transmition,
                   String brand, String type_motor, String date, String time,String status_order,
                   Boolean flag_customer_agree,Boolean flag_montir_agree,Integer amount,Montir montir,String check_up_list,
-                  String name_customer, String no_handphone_customer,String number_plate) {
+                  String name_customer, String no_handphone_customer,String number_plate,
+                              Double latitude, Double longitude) {
         this.customer_id = customer_id;
         this.address = address;
         this.type_order = type_order;
@@ -32,12 +33,15 @@ public class Order {
         this.name_customer = name_customer;
         this.no_handphone_customer = no_handphone_customer;
         this.number_plate = number_plate;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public Order(String customer_id, String address, String type_order, String transmition,
                  String brand, String type_motor, String date, String time, String status_order, Boolean oli_gardan,
                  Boolean oli_mesin, Boolean flag_customer_agree, Boolean flag_montir_agree, Integer amount, Montir montir,
-                 String name_customer, String no_handphone_customer, String number_plate) {
+                 String name_customer, String no_handphone_customer, String number_plate,
+                 Double latitude, Double longitude) {
         this.customer_id = customer_id;
         this.address = address;
         this.type_order = type_order;
@@ -56,6 +60,8 @@ public class Order {
         this.name_customer = name_customer;
         this.no_handphone_customer = no_handphone_customer;
         this.number_plate = number_plate;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public String getCustomer_id() {
@@ -224,5 +230,21 @@ public class Order {
 
     public void setCheck_up_list(String check_up_list) {
         this.check_up_list = check_up_list;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 }

@@ -12,6 +12,11 @@
         android:icon="@drawable/ic_account_balance_wallet_black_24dp">
     </item>
     <item
+        android:id="@+id/historyWallet"
+        android:title="Riwayat Dompet"
+        android:icon="@drawable/ic_history_black_24dp">
+    </item>
+    <item
         android:id="@+id/logout"
         android:title="Keluar"
         android:icon="@drawable/ic_exit_to_app_black_24dp">

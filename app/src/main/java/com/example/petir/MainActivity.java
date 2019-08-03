@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.petir.OrderAccepted.OrderAccepted;
 import com.example.petir.OrderPending.OrderPending;
+import com.example.petir.Wallet.HistoryWalletWithdrawActivity;
 import com.example.petir.Wallet.Wallet;
 import com.example.petir.helper.FormatNumber;
 import com.google.firebase.auth.FirebaseAuth;
@@ -137,6 +138,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 } else if (id == R.id.wallet) {
                     Intent intent = new Intent(getApplicationContext(), Wallet.class);
                     getCurrentMontirData();
+                    startActivity(intent);
+                } else if (id == R.id.historyWallet) {
+                    Intent intent = new Intent(getApplicationContext(), HistoryWalletWithdrawActivity.class);
                     startActivity(intent);
                 }
 

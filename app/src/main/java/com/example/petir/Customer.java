@@ -2,7 +2,7 @@ package com.example.petir;
 
 public class Customer {
 
-    private String username,email,role,password,number_handphone;
+    private String username,email,role,password,number_handphone, fcm_token;
     private Integer wallet;
 
     public Customer() {
@@ -64,5 +64,13 @@ public class Customer {
 
     public void setWallet(Integer wallet) {
         this.wallet = wallet;
+    }
+
+    public String getFcm_token() {
+        return fcm_token;
+    }
+
+    public void setFcm_token(String fcm_token) {
+        this.fcm_token = fcm_token;
     }
 }

@@ -26,7 +26,7 @@ import java.util.Map;
 public class PushNotif {
     private String SERVER_KEY = "AAAAq-fJnog:APA91bH5BkH0MPMzeuZbEkK41qgRQ8eThF4rVlre5QCeWyMJHfsOS9UpIkMIfOErHpy8yJVZgQ6sLCWWHytoOgV3GPU4r1O5PH4-X4Fpj6gx7I3W4JPEJ6yeC_-LPhT66pKry0Cy5YXV";
 
-    public void pushNotiftoMontir(Context context, String DEVICE_TOKEN) throws JSONException {
+    public void pushNotiftoMontir(Context context, String DEVICE_TOKEN, String pesan) throws JSONException {
 
         JSONObject jsonBody = new JSONObject();
         JSONObject jsonObject = new JSONObject();
@@ -36,7 +36,7 @@ public class PushNotif {
         jsonBody.put("content_available",true);
 
         jsonObject.put("title","Petir");
-        jsonObject.put("body","Kamu mendapatkan pesanan");
+        jsonObject.put("body",pesan);
         jsonBody.putOpt("notification",jsonObject);
 
         final String requestBody = jsonBody.toString();

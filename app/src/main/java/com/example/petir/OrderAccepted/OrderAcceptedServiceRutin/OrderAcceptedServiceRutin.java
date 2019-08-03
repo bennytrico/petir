@@ -4,6 +4,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.location.Location;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import com.example.petir.Customer;
 import com.example.petir.Montir;
 import com.example.petir.Order;
 import com.example.petir.OrderAccepted.OrderAcceptedCheckup.OrderAcceptedCheckUp;
+import com.example.petir.PushNotif;
 import com.example.petir.R;
 import com.example.petir.Rating;
 import com.example.petir.helper.Convertor;
@@ -32,6 +34,8 @@ import com.google.gson.Gson;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -156,6 +160,7 @@ public class OrderAcceptedServiceRutin extends AppCompatActivity {
 
                             }
                         });
+                        getListMontirAndReAssignMontir();
                         finish();
                     }
                 });
@@ -276,5 +281,151 @@ public class OrderAcceptedServiceRutin extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    public void getListMontirAndReAssignMontir() {
+        final ArrayList<Montir> arrayList = new ArrayList<>();
+        DatabaseReference dbMontir = FirebaseDatabase.getInstance().getReference("Montirs");
+        final DatabaseReference dbOrders = FirebaseDatabase.getInstance().getReference("Orders");
+
+        final ArrayList<String> idMontir = new ArrayList<>();
+
+        dbOrders.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Date dateBooking = new Date();
+                Calendar calendar = Calendar.getInstance();
+                Date dateMaxHours = new Date();
+                Date dateMinHours = new Date();
+
+                String dateAndTimeBooking = order.getDate() + " " + order.getTime();
+
+                SimpleDateFormat a = new SimpleDateFormat("dd MMM yyyy HH:mm");
+
+                try {
+                    dateBooking = a.parse(dateAndTimeBooking);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                calendar.setTime(dateBooking);
+                calendar.add(Calendar.HOUR,2);
+                dateMaxHours = calendar.getTime();
+                calendar.setTime(dateBooking);
+                calendar.add(Calendar.HOUR,-2);
+                dateMinHours = calendar.getTime();
+
+
+                for (DataSnapshot data:dataSnapshot.getChildren()) {
+                    Order order = data.getValue(Order.class);
+                    Date date = new Date();
+                    String dateAndTime = order.getDate()+" "+order.getTime();
+                    try {
+                        date = a.parse(dateAndTime);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+
+                    if(dateMinHours.compareTo(date) < 0
+                            && dateMaxHours.compareTo(date) > 0 ) {
+                        idMontir.add(order.getMontir().getId());
+                        if (order.getStatus_order().equals("done")) {
+                            idMontir.remove(order.getMontir().getId());
+                        } else if (order.getStatus_order().equals("cancel")) {
+                            idMontir.remove(order.getMontir().getId());
+                        } else if (order.getStatus_order().equals("end")) {
+                            idMontir.remove(order.getMontir().getId());
+                        } else if (order.getMontir().getId()
+                                .equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
+                            idMontir.remove(order.getMontir().getId());
+                        }
+                    }
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        dbMontir.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                Location customerLocation = new Location("a");
+                com.google.android.gms.maps.model.LatLng latLng = new com.google.android.gms.maps.model.LatLng(order.getLatitude(), order.getLongitude());
+                customerLocation.setLatitude(latLng.latitude);
+                customerLocation.setLongitude(latLng.longitude);
+
+                for (DataSnapshot data: dataSnapshot.getChildren()) {
+                    Montir m = data.getValue(Montir.class);
+                    m.setId(data.getKey());
+
+                    android.location.Location montirLocation = new android.location.Location("b");
+                    com.google.android.gms.maps.model.LatLng latLngMontir = new com.google.android.gms.maps.model.LatLng(m.getLatitude(),m.getLongitude());
+                    montirLocation.setLatitude(latLngMontir.latitude);
+                    montirLocation.setLongitude(latLngMontir.longitude);
+
+                    int distance = (int) customerLocation.distanceTo(montirLocation);
+                    m.setPassword("");
+                    if (distance < 1000  && !idMontir.contains(m.getId())) {
+                        arrayList.add(m);
+                    }
+
+                }
+                Map<String, Object> update = new HashMap<String, Object>();
+                update.put("montir", arrayList.get(0));
+                dbOrders.child(order.getId()).updateChildren(update);
+
+                PushNotif pushNotif = new PushNotif();
+                if (arrayList.get(0).getFcm_token() != null) {
+                    try {
+                        pushNotif.pushNotiftoMontir(getApplicationContext(),
+                                arrayList.get(0).getFcm_token(),
+                                "Kamu mendapatkan pesanan");
+                    }catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        DatabaseReference dbCustomer = FirebaseDatabase.getInstance()
+                .getReference("Customers")
+                .child(order.getCustomer_id());
+        dbCustomer.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Customer customer = dataSnapshot.getValue(Customer.class);
+                PushNotif pushNotif = new PushNotif();
+                if (customer.getFcm_token() != null) {
+                    try {
+                        pushNotif.pushNotiftoMontir(getApplicationContext(),
+                                customer.getFcm_token(),
+                                "Maaf Pesanaan kamu dibatalkan oleh montir");
+                    }catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                    try {
+                        pushNotif.pushNotiftoMontir(getApplicationContext(),
+                                customer.getFcm_token(),
+                                "Anda Mendapatkan montir pengganti, silahkan periksa kembali pesanan anda");
+                    }catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 }

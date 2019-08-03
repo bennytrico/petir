@@ -3,7 +3,7 @@ package com.example.petir;
 public class Montir {
     private Double rating;
     private Integer wallet;
-    private String name,address,email,role,bank,bank_account_name,bank_account_number,id,image, fcm_token;
+    private String name,address,email,role,bank,bank_account_name,bank_account_number,id,image, fcm_token, password;
     private Double latitude,longitude;
 
     public Montir() {
@@ -134,5 +134,13 @@ public class Montir {
 
     public void setFcm_token(String fcm_token) {
         this.fcm_token = fcm_token;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

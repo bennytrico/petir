@@ -32,6 +32,7 @@ public class ProfilePage extends AppCompatActivity {
     EditText newPassword;
     EditText reNewPassword;
     Button submitChangePassword;
+    TextView rating;
 
     private String formOldPassword;
     private String formNewPassword;
@@ -48,31 +49,56 @@ public class ProfilePage extends AppCompatActivity {
         submitChangePassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Dialog dialog = new Dialog(ProfilePage.this);
-                dialog.setContentView(R.layout.dialog_confirmation);
-                dialog.setTitle("Info");
+                if (! validateForm()) {
+                    final Dialog dialog = new Dialog(ProfilePage.this);
+                    dialog.setContentView(R.layout.custom_dialog_confirmation_with_password);
+                    dialog.setTitle("Info");
 
-                Button agree = (Button) dialog.findViewById(R.id.agreeTopUp);
-                Button disAgree = (Button) dialog.findViewById(R.id.disagreeTopUp);
+                    Button agree = (Button) dialog.findViewById(R.id.agreeTopUpWithPassword);
+                    Button disAgree = (Button) dialog.findViewById(R.id.disagreeTopUpWithPassword);
+                    final EditText password = (EditText) dialog.findViewById(R.id.customDialogPassword);
 
-                disAgree.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-                agree.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                        validateForm();
-                    }
-                });
-                dialog.show();
+                    disAgree.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    agree.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            String passwordConfirmation = password.getText().toString().trim();
+                            if (montir.getPassword().equals(passwordConfirmation)) {
+                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                                user.updatePassword(formNewPassword)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    DatabaseReference dbMontir = FirebaseDatabase.getInstance().getReference("Montirs").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                                                    Map<String, Object> update = new HashMap<String, Object>();
+                                                    update.put("password",formNewPassword);
+                                                    dbMontir.updateChildren(update);
+                                                    finish();
+                                                    Toast.makeText(ProfilePage.this, "Berhasil ganti kata sandi", Toast.LENGTH_SHORT).show();
+                                                    dialog.dismiss();
+                                                } else {
+                                                    Toast.makeText(ProfilePage.this, "Gagal ganti password", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+                            } else {
+                                Toast.makeText(ProfilePage.this, "Password lamamu salah", Toast.LENGTH_SHORT).show();
+                                dialog.dismiss();
+                            }
+                        }
+                    });
+                    dialog.show();
+                }
             }
         });
     }
-    public void validateForm() {
+    public boolean validateForm() {
         formOldPassword = oldPassword.getText().toString().trim();
         formNewPassword = newPassword.getText().toString().trim();
         formReNewPassword = reNewPassword.getText().toString().trim();
@@ -89,26 +115,11 @@ public class ProfilePage extends AppCompatActivity {
         } else if (!formNewPassword.equals(formReNewPassword)) {
             flag = true;
             Toast.makeText(this,"Password baru harus sama dengan password ulang baru",Toast.LENGTH_SHORT).show();
+        } else if (!montir.getPassword().equals(formOldPassword)) {
+            flag = true;
+            Toast.makeText(this,"Password lama salah",Toast.LENGTH_SHORT).show();
         }
-
-        if (!flag) {
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            user.updatePassword(formNewPassword)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                DatabaseReference dbMontir = FirebaseDatabase.getInstance().getReference("Montirs").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-                                Map<String, Object> update = new HashMap<String, Object>();
-                                update.put("password",formNewPassword);
-                                dbMontir.updateChildren(update);
-                                finish();
-                            } else {
-                                Toast.makeText(ProfilePage.this, "Gagal ganti password", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-        }
+        return flag;
     }
     public void initVariable() {
         oldPassword = (EditText) findViewById(R.id.oldPassword);
@@ -117,6 +128,7 @@ public class ProfilePage extends AppCompatActivity {
         nameProfile = (TextView) findViewById(R.id.nameProfile);
         emailProfile = (TextView) findViewById(R.id.emailProfile);
         submitChangePassword = (Button) findViewById(R.id.submitChangePassword);
+        rating = (TextView) findViewById(R.id.ratingProfile);
     }
     public void getUserData () {
         DatabaseReference dbMontir = FirebaseDatabase.getInstance().getReference("Montirs").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
@@ -126,6 +138,7 @@ public class ProfilePage extends AppCompatActivity {
                 montir = dataSnapshot.getValue(Montir.class);
                 nameProfile.setText(montir.getName());
                 emailProfile.setText(montir.getEmail());
+                rating.setText(String.format("%.2f",montir.getRating()));
             }
 
             @Override

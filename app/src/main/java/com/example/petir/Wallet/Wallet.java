@@ -1,5 +1,6 @@
 package com.example.petir.Wallet;
 
+import android.app.Dialog;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -16,16 +17,19 @@ import android.widget.Toast;
 import com.example.petir.Montir;
 import com.example.petir.R;
 import com.example.petir.WalletConfirmations;
+import com.example.petir.helper.FormatNumber;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.example.petir.CurrentUser.currentUserBank;
 import static com.example.petir.CurrentUser.currentUserBankAccountName;
 import static com.example.petir.CurrentUser.currentUserBankAccountNumber;
 import static com.example.petir.CurrentUser.currentUserEmail;
@@ -37,7 +41,6 @@ import static com.example.petir.CurrentUser.getCurrentMontirData;
 public class Wallet extends AppCompatActivity {
 
     Boolean flagValidationEditBankAccount;
-    Boolean flagValidationRequestWithdrawal;
     Integer amount;
 
     TextView currentWalletWalletPage;
@@ -61,11 +64,16 @@ public class Wallet extends AppCompatActivity {
     private String bankName;
     private String nomorRekening;
     private Integer wallet;
+    String bankAccountName;
+    String bankAccountNumber;
+    String bankChange;
+
+    private String walletConfirmationId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_top_up_wallet_page);
+        setContentView(R.layout.activity_withdraw_wallet_page);
 
         currentWalletWalletPage = (TextView) findViewById(R.id.currentWalletWalletPage);
         currentBankAccountName = (TextView) findViewById(R.id.currentBankAccountName);
@@ -82,8 +90,8 @@ public class Wallet extends AppCompatActivity {
         submitRequestWithdrawal = (Button) findViewById(R.id.submitRequest);
         submitEditAccountBank = (Button) findViewById(R.id.submitRequestChangeAkunBank);
 
-        dbMontir = FirebaseDatabase.getInstance().getReference("Montirs").child(currentUserID);
-        dbMontir.addListenerForSingleValueEvent(new ValueEventListener() {
+        dbMontir = FirebaseDatabase.getInstance().getReference("Montirs").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+        dbMontir.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Montir m = dataSnapshot.getValue(Montir.class);
@@ -92,7 +100,8 @@ public class Wallet extends AppCompatActivity {
                 nomorRekening = m.getBank_account_number();
                 wallet = m.getWallet();
 
-                currentWalletWalletPage.setText(wallet);
+                FormatNumber formatNumber = new FormatNumber();
+                currentWalletWalletPage.setText(formatNumber.formatNumber(wallet));
                 currentBankAccountName.setText(bankName);
                 currentBankAccountNumber.setText(nomorRekening);
                 currentBankName.setText(bank);
@@ -104,8 +113,6 @@ public class Wallet extends AppCompatActivity {
             }
         });
 
-        flagValidationEditBankAccount = true;
-        flagValidationRequestWithdrawal = true;
 
 
         buttonDropDownRequestWithdrawal.setOnClickListener(new View.OnClickListener() {
@@ -132,44 +139,133 @@ public class Wallet extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 validationEditBankAccount();
+                if (flagValidationEditBankAccount) {
+                    Log.e("asdasd","asdasd");
+                    final Dialog dialog = new Dialog(Wallet.this);
+                    dialog.setContentView(R.layout.dialog_confirmation);
+                    dialog.setTitle("Info");
+
+                    Button agree = (Button) dialog.findViewById(R.id.agreeTopUp);
+                    Button disAgree = (Button) dialog.findViewById(R.id.disagreeTopUp);
+
+                    disAgree.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    agree.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Map<String, Object> update = new HashMap<String, Object>();
+                            update.put("bank",bankChange);
+                            update.put("bank_account_name",bankAccountName);
+                            update.put("bank_account_number",bankAccountNumber);
+                            dbMontir.updateChildren(update);
+                            Toast.makeText(Wallet.this,"edit berhasil",Toast.LENGTH_SHORT).show();
+                            finish();
+                        }
+                    });
+                    dialog.show();
+                }
             }
         });
         submitRequestWithdrawal.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getCurrentMontirData();
-                validationRequestWithdrawal();
+
+                if (validationRequestWithdrawal()) {
+                    Log.e("asdasd","asdasd");
+                    final Dialog dialog = new Dialog(Wallet.this);
+                    dialog.setContentView(R.layout.dialog_confirmation);
+                    dialog.setTitle("Info");
+
+                    Button agree = (Button) dialog.findViewById(R.id.agreeTopUp);
+                    Button disAgree = (Button) dialog.findViewById(R.id.disagreeTopUp);
+
+                    disAgree.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    agree.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            DatabaseReference dbWalletConfirmations = FirebaseDatabase.getInstance().getReference("WalletConfirmations");
+                            final DatabaseReference dbWalletHistory = FirebaseDatabase.getInstance().getReference("WalletConfirmationHistory")
+                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+
+                            String status = "requested";
+                            Date createdAt = new Date();
+                            SimpleDateFormat formater = new SimpleDateFormat("dd MMMM yyyy");
+                            final WalletConfirmations walletConfirmations = new WalletConfirmations(
+                                    currentUserBankAccountName,
+                                    currentUserBankAccountNumber,
+                                    currentUserEmail,
+                                    currentUserName,
+                                    status,
+                                    currentUserID,
+                                    amount,
+                                    formater.format(createdAt)
+                            );
+                            walletConfirmationId = dbWalletConfirmations.push().getKey();
+                            dbWalletConfirmations.child(walletConfirmationId).setValue(walletConfirmations);
+
+                            Map<String, Object> update = new HashMap<String, Object>();
+                            Integer calculatedAmount = currentUserWallet - amount;
+                            update.put("wallet", calculatedAmount);
+                            dbMontir.updateChildren(update);
+                            Toast.makeText(Wallet.this,"Permintaan anda berhasil",Toast.LENGTH_SHORT).show();
+
+                            dbWalletHistory.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    if (dataSnapshot.exists()) {
+                                        dbWalletHistory.child(walletConfirmationId).setValue(walletConfirmations);
+                                    } else {
+                                        DatabaseReference dbWalletHistoryRegisterUserId = FirebaseDatabase.getInstance()
+                                                .getReference("WalletConfirmationHistory");
+                                        dbWalletHistoryRegisterUserId.child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                                .child(walletConfirmationId).setValue(walletConfirmations);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
+                            finish();
+                        }
+                    });
+                    dialog.show();
+                }
             }
         });
     }
 
     public void validationEditBankAccount () {
-        String bankAccountName = userBankAccountName.getText().toString().trim();
-        String bankAccountNumber = userBankAccountNumber.getText().toString().trim();
-        String bank = userBank.getText().toString().trim();
+        bankAccountName = userBankAccountName.getText().toString().trim();
+        bankAccountNumber = userBankAccountNumber.getText().toString().trim();
+        bankChange = userBank.getText().toString().trim();
 
         if (TextUtils.isEmpty(bankAccountName)) {
-            Toast.makeText(this,"nama akun bank harus di isi", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Nama akun bank harus di isi", Toast.LENGTH_SHORT).show();
             flagValidationEditBankAccount = false;
         } else if (TextUtils.isEmpty(bankAccountNumber)) {
-            Toast.makeText(this,"nomor akun bank harus di isi",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Nomor akun bank harus di isi",Toast.LENGTH_SHORT).show();
             flagValidationEditBankAccount = false;
-        } else if (TextUtils.isEmpty(bank)) {
-            Toast.makeText(this,"nama bank harus di isi",Toast.LENGTH_SHORT).show();
+        } else if (TextUtils.isEmpty(bankChange)) {
+            Toast.makeText(this,"Nama bank harus di isi",Toast.LENGTH_SHORT).show();
             flagValidationEditBankAccount = false;
-        }
-
-        if (flagValidationEditBankAccount) {
-            Map<String, Object> update = new HashMap<String, Object>();
-            update.put("bank",bank);
-            update.put("bank_account_name",bankAccountName);
-            update.put("bank_account_number",bankAccountNumber);
-            dbMontir.updateChildren(update);
-            Toast.makeText(this,"edit berhasil",Toast.LENGTH_SHORT).show();
-            finish();
         }
     }
-    public void validationRequestWithdrawal () {
+    public Boolean validationRequestWithdrawal () {
+        Boolean flagValidationRequestWithdrawal;
+
         try {
             amount = Integer.parseInt(amountRequest.getText().toString());
         } catch (NumberFormatException e) {
@@ -179,30 +275,11 @@ public class Wallet extends AppCompatActivity {
             flagValidationRequestWithdrawal = false;
             Toast.makeText(this, "Jumlah harus di isi",Toast.LENGTH_SHORT).show();
         } else if (amount > currentUserWallet) {
-            Toast.makeText(this,"melebihi dari saldo",Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Melebihi dari saldo",Toast.LENGTH_SHORT).show();
             flagValidationRequestWithdrawal = false;
         } else {
             flagValidationRequestWithdrawal = true;
         }
-        if (flagValidationRequestWithdrawal) {
-            DatabaseReference dbWalletConfirmations = FirebaseDatabase.getInstance().getReference("WalletConfirmations");
-            String status = "requested";
-            WalletConfirmations walletConfirmations = new WalletConfirmations(
-                    currentUserBankAccountName,
-                    currentUserBankAccountNumber,
-                    currentUserEmail,
-                    currentUserName,
-                    status,
-                    currentUserID,
-                    amount
-            );
-            dbWalletConfirmations.push().setValue(walletConfirmations);
-
-            Map<String, Object> update = new HashMap<String, Object>();
-            Integer calculatedAmount = currentUserWallet - amount;
-            update.put("wallet", calculatedAmount);
-            dbMontir.updateChildren(update);
-            finish();
-        }
+        return flagValidationRequestWithdrawal;
     }
 }
