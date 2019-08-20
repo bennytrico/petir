@@ -117,7 +117,7 @@ public class OrderAcceptedServiceRutin extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         dialog.dismiss();
-                        dbOrder.child(order.getId()).child("status_order").setValue("cancel");
+                        dbOrder.child(order.getId()).child("status_order").setValue("wait");
                         final DatabaseReference updateCustomer = FirebaseDatabase.getInstance().getReference("Customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                         DatabaseReference dbCustomer = FirebaseDatabase.getInstance().getReference("Customers").child(FirebaseAuth.getInstance().getCurrentUser().getUid());
                         dbCustomer.addListenerForSingleValueEvent(new ValueEventListener() {

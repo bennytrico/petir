@@ -240,7 +240,7 @@ public class OrderPending extends Fragment {
                 });
 
                 Map<String, Object> update = new HashMap<String, Object>();
-                update.put("status_order","cancel");
+                update.put("status_order","wait");
                 dbOrder.updateChildren(update);
                 dialog.dismiss();
                 getListMontirAndReAssignMontir(order);
@@ -301,7 +301,7 @@ public class OrderPending extends Fragment {
                             idMontir.remove(order.getMontir().getId());
                         } else if (order.getMontir().getId()
                                 .equals(FirebaseAuth.getInstance().getCurrentUser().getUid())) {
-                            idMontir.remove(order.getMontir().getId());
+                            idMontir.add(order.getMontir().getId());
                         }
                     }
                 }
